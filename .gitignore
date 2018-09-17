@@ -1,0 +1,12 @@
+bin-debug/
+bin-release/
+.idea/
+temp/
+egret.d.ts
+libs/egret.d.ts
+node_modules/
+project_android/
+project_wxgame/
+project_wxgame_remote/
+project-docs-zh-cn/
+project-docs-en-us/
