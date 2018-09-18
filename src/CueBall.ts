@@ -3,8 +3,8 @@ module game {
 
     export class CueBall extends egret.Sprite {
 
-        private cueBallShape: p2.Circle;
-        private cueBallBody: p2.Body;
+        public cueBallShape: p2.Circle;
+        public cueBallBody: p2.Body;
         private cueBallBmp: egret.Bitmap;
 
         public constructor(private world: p2.World) {

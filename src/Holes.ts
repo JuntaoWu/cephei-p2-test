@@ -6,6 +6,7 @@ module game {
 
         public constructor(private world: p2.World) {
             super();
+            this.createHoles();
         }
 
         public createHoles() {
