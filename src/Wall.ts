@@ -4,26 +4,29 @@ module game {
     export class Wall extends egret.Sprite {
 
         public wallBodys = [];
+        public airWallBodys = [];
         public upOneWall: p2.Box;
-        public upTwoWall: p2.Box;
         public downOneWall: p2.Box;
         public leftWall: p2.Box;
         public downTwoWall: p2.Box;
         public rightWall: p2.Box;
 
-        public constructor(private world: p2.World) {
+        public airWall: p2.Box;
+
+        public constructor(private world: p2.World, private config: Array<GameObjectInfo>) {
             super();
             this.createWall();
         }
 
         public createWall() {
+            //upOneWall
             var e = new p2.Box({
-                width: 248,
-                height: 90
+                width: 800,
+                height: 85
             });
             const t = new p2.Body({
                 mass: 0,
-                position: [250, 45]
+                position: [400, 45]
             });
             t.addShape(e),
                 t.displays = [],
@@ -31,26 +34,14 @@ module game {
                 this.upOneWall = e,
                 this.wallBodys.push(t);
 
-            var i = new p2.Box({
-                width: 248,
-                height: 90
-            });
-            const o = new p2.Body({
-                mass: 0,
-                position: [549, 45]
-            });
-            o.addShape(i),
-                o.displays = [],
-                this.world.addBody(o),
-                this.upTwoWall = i,
-                this.wallBodys.push(o);
+            //downOneWall
             var a = new p2.Box({
-                width: 248,
-                height: 90
+                width: 800,
+                height: 85
             });
             const s = new p2.Body({
                 mass: 0,
-                position: [250, 435]
+                position: [400, 435]
             });
             s.addShape(a),
                 s.displays = [],
@@ -58,26 +49,14 @@ module game {
                 this.downOneWall = a,
                 this.wallBodys.push(s);
 
-            var l = new p2.Box({
-                width: 248,
-                height: 90
-            });
-            const r = new p2.Body({
-                mass: 0,
-                position: [549, 435]
-            });
-            r.addShape(l),
-                r.displays = [],
-                this.world.addBody(r),
-                this.downTwoWall = l,
-                this.wallBodys.push(r);
+            //leftWall
             var n = new p2.Box({
                 width: 100,
-                height: 250
+                height: 300
             });
             const h = new p2.Body({
                 mass: 0,
-                position: [50, 241]
+                position: [50, 240]
             });
             h.displays = [],
                 h.addShape(n),
@@ -86,17 +65,63 @@ module game {
                 this.wallBodys.push(h);
             var d = new p2.Box({
                 width: 100,
-                height: 250
+                height: 300
             });
             const p = new p2.Body({
                 mass: 0,
-                position: [750, 241]
+                position: [750, 240]
             });
             p.displays = [],
                 p.addShape(d),
                 this.world.addBody(p),
                 this.rightWall = d,
                 this.wallBodys.push(p);
+
+
+            this.config.forEach(airWall => {
+                //airWall
+                var airBox = new p2.Box({
+                    width: airWall.width,
+                    height: airWall.height,
+                });
+                const airBody = new p2.Body({
+                    mass: 0,
+                    position: [airWall.x, airWall.y],
+                });
+
+                airBody.addShape(airBox),
+                    airBody.displays = [],
+                    this.world.addBody(airBody),
+                    this.airWall = airBox,
+                    this.airWallBodys.push(airBody);
+            });
+        }
+
+        public updateConfig(config: Array<GameObjectInfo>) {
+            this.config = config;
+
+            this.airWallBodys.forEach(body => {
+                body && this.world.removeBody(body);
+            });
+            this.airWallBodys.length = 0;
+
+            this.config.forEach(airWall => {
+                //airWall
+                var airBox = new p2.Box({
+                    width: airWall.width,
+                    height: airWall.height,
+                });
+                const airBody = new p2.Body({
+                    mass: 0,
+                    position: [airWall.x, airWall.y],
+                });
+
+                airBody.addShape(airBox),
+                    airBody.displays = [],
+                    this.world.addBody(airBody),
+                    this.airWall = airBox,
+                    this.airWallBodys.push(airBody);
+            });
         }
 
     }

@@ -13,12 +13,13 @@
 		"libs/modules/physics/physics.js"
 	],
 	"game": [
+		"bin-debug/Holes.js",
 		"bin-debug/AssetAdapter.js",
-		"bin-debug/Balls.js",
 		"bin-debug/Cue.js",
 		"bin-debug/CueBall.js",
 		"bin-debug/GameBackground.js",
-		"bin-debug/Holes.js",
+		"bin-debug/Balls.js",
+		"bin-debug/Level.js",
 		"bin-debug/Main.js",
 		"bin-debug/p2DebugDraw.js",
 		"bin-debug/ThemeAdapter.js",

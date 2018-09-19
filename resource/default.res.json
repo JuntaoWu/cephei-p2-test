@@ -1,7 +1,7 @@
 {
 	"groups": [
 		{
-			"keys": "checkbox_select_disabled_png,checkbox_select_down_png,checkbox_select_up_png,checkbox_unselect_png,selected_png,border_png,header_png,radiobutton_select_disabled_png,radiobutton_select_down_png,radiobutton_select_up_png,radiobutton_unselect_png,roundthumb_png,thumb_png,track_png,tracklight_png,handle_png,off_png,on_png,button_down_png,button_up_png,thumb_pb_png,track_pb_png,track_sb_png,bg_jpg,egret_icon_png,description_json,rects.rect-9,rects.rect-1,cue_png,cueBall_png,redBall_png,table_jpg",
+			"keys": "checkbox_select_disabled_png,checkbox_select_down_png,checkbox_select_up_png,checkbox_unselect_png,selected_png,border_png,header_png,radiobutton_select_disabled_png,radiobutton_select_down_png,radiobutton_select_up_png,radiobutton_unselect_png,roundthumb_png,thumb_png,track_png,tracklight_png,handle_png,off_png,on_png,button_down_png,button_up_png,thumb_pb_png,track_pb_png,track_sb_png,bg_jpg,egret_icon_png,description_json,rects.rect-9,rects.rect-1,cue_png,cueBall_png,redBall_png,table_jpg,level_json",
 			"name": "preload"
 		}
 	],
@@ -165,6 +165,11 @@
 			"url": "assets/cueBall.png",
 			"type": "image",
 			"name": "cueBall_png"
+		},
+		{
+			"name": "level_json",
+			"type": "json",
+			"url": "config/level.json"
 		}
 	]
 }
