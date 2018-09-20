@@ -132,6 +132,7 @@ class Main extends eui.UILayer {
             this.stageW = egret.MainContext.instance.stage.stageWidth,
             this.stageH = egret.MainContext.instance.stage.stageHeight,
             this.createWorld(),
+            this.createCueArea(),
             this.createDebug(),
             this.stage.addChild(this._gameBg = new game.GameBackground()),
             this.stage.addChild(this._wall = new game.Wall(this.world, this.levelsArray[this.currentLevel].walls)),
@@ -151,6 +152,26 @@ class Main extends eui.UILayer {
         wrd.sleepMode = p2.World.BODY_SLEEPING;
         wrd.gravity = [0, 0];
         this.world = wrd;
+    }
+
+    private createCueArea(): void {
+        var stageWidth: number = egret.MainContext.instance.stage.stageWidth;
+        var stageHeight: number = egret.MainContext.instance.stage.stageHeight;
+        var wallShape: p2.Box = new p2.Box({
+            width: 300,
+            height: stageHeight * 0.6
+        });
+        
+        var wallBody: p2.Body = new p2.Body();
+        console.log(wallBody.type == p2.Body.STATIC);
+        wallBody.displays = [];
+        wallBody.position[0] = 600;
+        wallBody.position[1] = 240;
+        wallBody.addShape(wallShape);
+        wallShape.collisionGroup = 0;
+        wallShape.collisionMask = 0;
+
+        this.world.addBody(wallBody);
     }
 
     private createWalls() {
@@ -263,6 +284,17 @@ class Main extends eui.UILayer {
             for (var i = 0; i < e._ball.ballBody.length; i++) {
                 var a = e._ball.ballBody[i];
             }
+            this._wall.airWallBodys.forEach(i => {
+                if (t.bodyA === i || t.bodyB === i) {
+
+                    this._ball.ballBody.forEach(m => {
+                        if (t.bodyA === m || t.bodyB === m) {
+                            console.log("Enemy HP -1");
+                        }
+                    });
+
+                }
+            });
         })
     }
 
@@ -285,13 +317,13 @@ class Main extends eui.UILayer {
                     this.stage.addChild(this._cueBall = new game.CueBall(this.world, this.levelsArray[this.currentLevel].cueBalls));
                     this.cueState == game.CueState.CUEOFF;
                     this._cueBall.cueBallBody.sleepState = p2.Body.SLEEPY;
-                    this.stage.addChild(this._cue = new game.Cue(this._cueBall.cueBallBody.position[0], this._cueBall.cueBallBody.position[1]));
+                    this.stage.addChild(this._cue = new game.Cue(600, 200, this.world));
                     this.createMaterial();
                 }
-                this._cue.cueBmp.x = e.stageX;
-                this._cue.cueBmp.y = e.stageY;
-                let i = e.stageX - this._cue.cueBmp.x;
-                let o = e.stageY - this._cue.cueBmp.y;
+                this._cue.cueGroup.x = e.stageX;
+                this._cue.cueGroup.y = e.stageY;
+                let i = e.stageX - this._cue.cueGroup.x;
+                let o = e.stageY - this._cue.cueGroup.y;
                 this.mouseStart = new Array(this._cueBall.cueBallBody.position[0], this._cueBall.cueBallBody.position[1]);
                 break;
             }
@@ -328,8 +360,8 @@ class Main extends eui.UILayer {
                 break;
             }
             case egret.TouchEvent.TOUCH_MOVE: {
-                this._cue.cueBmp.x = e.stageX;
-                this._cue.cueBmp.y = e.stageY;
+                this._cue.cueGroup.x = e.stageX;
+                this._cue.cueGroup.y = e.stageY;
                 break;
             }
         }
@@ -360,7 +392,7 @@ class Main extends eui.UILayer {
 
         if (this.cueState != game.CueState.CUEON) {
             if (this._cueBall.cueBallBody.sleepState == p2.Body.SLEEPING) {
-                this.stage.addChild(this._cue = new game.Cue(this._cueBall.cueBallBody.position[0], this._cueBall.cueBallBody.position[1]));
+                this.stage.addChild(this._cue = new game.Cue(600, 200, this.world));
                 this.cueState = game.CueState.CUEON;
                 this.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchEvent, this);
                 this.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);

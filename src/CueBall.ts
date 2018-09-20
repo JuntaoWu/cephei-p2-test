@@ -17,7 +17,7 @@ module game {
         }
 
         public cueBallRemoveBmp = function () {
-            if(this.cueBallBmp) {
+            if (this.cueBallBmp) {
                 this.removeChild(this.cueBallBmp);
                 this.cueBallBmp = undefined;
             }
@@ -34,13 +34,12 @@ module game {
             this.config.forEach(gameObjectInfo => {
                 var e = new p2.Circle({
                     radius: gameObjectInfo.width / 2
-                })
-                    , t = new p2.Body({
-                        mass: 1,
-                        position: [gameObjectInfo.x, gameObjectInfo.y]
-                    });
+                });
+                var t = new p2.Body({
+                    mass: 1,
+                    position: [gameObjectInfo.x, gameObjectInfo.y]
+                });
                 t.addShape(e),
-                    t.fixedRotation = !0,
                     this.world.addBody(t),
                     this.cueBallShape = e;
                 var i = new egret.Bitmap(RES.getRes("cueBall_png"));

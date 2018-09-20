@@ -117,8 +117,6 @@ module game {
                 o.width = o.height = ball.width,
                     o.anchorOffsetX = ball.width / 2,
                     o.anchorOffsetY = ball.height / 2,
-                    o.x = i.position[0],
-                    o.y = i.position[1],
                     o.rotation = -90,
                     this.addChild(o),
                     i.displays = [o],
