@@ -13,5 +13,8 @@ module game {
         public height: number;
         public x: number;
         public y: number;
+        public type: string;
+        public endX: number;
+        public endY: number;
     }
 }

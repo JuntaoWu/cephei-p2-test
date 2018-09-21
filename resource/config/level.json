@@ -2,10 +2,10 @@
     {
         "level": 0,
         "balls": [
-            { "width": 50, "height": 50, "x": 400, "y": 150 }
+            { "width": 50, "height": 50, "x": 400, "y": 150, "type": "enemy" }
         ],
         "walls": [
-            { "width": 20, "height": 100, "x": 300, "y": 225 }
+            { "width": 20, "height": 100, "x": 300, "y": 225, "endX": 300, "endY": 325, "type": "attack" }
         ],
         "cueBalls": [
             { "width": 50, "height": 50, "x": 500, "y": 250 }
@@ -17,16 +17,48 @@
     {
         "level": 1,
         "balls": [
-            { "width": 50, "height": 50, "x": 400, "y": 350 }
+            { "width": 50, "height": 50, "x": 400, "y": 350, "type": "enemy" }
         ],
         "walls": [
-            { "width": 20, "height": 100, "x": 300, "y": 425 }
+            { "width": 20, "height": 100, "x": 300, "y": 425, "type": "attack" }
         ],
         "cueBalls": [
             { "width": 50, "height": 50, "x": 500, "y": 250 }
         ],
         "holes": [
-            { "width": 100, "height": 50, "x": 200, "y": 250 }
+            
+        ]
+    },
+    {
+        "level": 2,
+        "balls": [
+            { "width": 50, "height": 50, "x": 400, "y": 400, "type": "hero" },
+            { "width": 50, "height": 50, "x": 200, "y": 350, "type": "enemy" }
+        ],
+        "walls": [
+            { "width": 20, "height": 100, "x": 300, "y": 425, "type": "attack" }
+        ],
+        "cueBalls": [
+            { "width": 50, "height": 50, "x": 500, "y": 250 }
+        ],
+        "holes": [
+            
+        ]
+    },
+    {
+        "level": 3,
+        "balls": [
+            { "width": 50, "height": 50, "x": 400, "y": 400, "type": "hero" },
+            { "width": 50, "height": 50, "x": 200, "y": 350, "type": "enemy" }
+        ],
+        "walls": [
+            { "width": 20, "height": 100, "x": 300, "y": 425, "endX": 300, "endY": 325, "type": "attack" }
+        ],
+        "cueBalls": [
+            { "width": 50, "height": 50, "x": 500, "y": 250 }
+        ],
+        "holes": [
+            
         ]
     }
 ]

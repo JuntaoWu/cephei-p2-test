@@ -13,16 +13,20 @@
 		"libs/modules/physics/physics.js"
 	],
 	"game": [
-		"bin-debug/Holes.js",
+		"bin-debug/Main.js",
 		"bin-debug/AssetAdapter.js",
 		"bin-debug/Cue.js",
 		"bin-debug/CueBall.js",
 		"bin-debug/GameBackground.js",
-		"bin-debug/Balls.js",
+		"bin-debug/Holes.js",
 		"bin-debug/Level.js",
-		"bin-debug/Main.js",
+		"bin-debug/Balls.js",
 		"bin-debug/p2DebugDraw.js",
 		"bin-debug/ThemeAdapter.js",
-		"bin-debug/Wall.js"
+		"bin-debug/Wall.js",
+		"bin-debug/utils/DirectionHelper.js",
+		"bin-debug/utils/DragonBones.js",
+		"bin-debug/utils/Guid.js",
+		"bin-debug/utils/ObjectPool.js"
 	]
 }

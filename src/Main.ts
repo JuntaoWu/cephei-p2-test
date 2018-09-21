@@ -40,6 +40,9 @@ class Main extends eui.UILayer {
     private _ball: game.Balls;
     private _cue: game.Cue;
 
+    //cueArea;
+    private cueArea: p2.Body;
+
     private cueBallState: game.CueBallState;
     private cueState: game.CueState;
 
@@ -161,7 +164,7 @@ class Main extends eui.UILayer {
             width: 300,
             height: stageHeight * 0.6
         });
-        
+
         var wallBody: p2.Body = new p2.Body();
         console.log(wallBody.type == p2.Body.STATIC);
         wallBody.displays = [];
@@ -172,6 +175,7 @@ class Main extends eui.UILayer {
         wallShape.collisionMask = 0;
 
         this.world.addBody(wallBody);
+        this.cueArea = wallBody;
     }
 
     private createWalls() {
@@ -281,19 +285,36 @@ class Main extends eui.UILayer {
                     }
                 }
             }
+
+            if (this._ball.ballBody.some(i => i === t.bodyA) && this._ball.ballBody.some(i => i === t.bodyB)) {
+
+            }
+
             for (var i = 0; i < e._ball.ballBody.length; i++) {
                 var a = e._ball.ballBody[i];
             }
-            this._wall.airWallBodys.forEach(i => {
-                if (t.bodyA === i || t.bodyB === i) {
+            this._wall.airWallBodys.forEach((i, wallIndex) => {
+                if (this._wall.airWallTypes[wallIndex] == "attack") {
+                    if (t.bodyA === i || t.bodyB === i) {
 
-                    this._ball.ballBody.forEach(m => {
-                        if (t.bodyA === m || t.bodyB === m) {
-                            console.log("Enemy HP -1");
+                        this._ball.ballBody.forEach((m, index) => {
+                            if (t.bodyA === m || t.bodyB === m) {
+                                console.log(index, "HP -1");
+                                --this._ball.hps[index];
+                            }
+                        });
+
+                        if (this._ball.hps.some((hp, index) => (hp <= 0 && this._ball.types[index] == "hero"))) {
+                            console.log("hero dead.");
+                            this.updateLevel(this.currentLevel);
                         }
-                    });
-
+                        else if (this._ball.hps.some((hp, index) => (hp <= 0 && this._ball.types[index] == "enemy"))) {
+                            console.log("enemy dead.");
+                            this.updateLevel(this.currentLevel + 1);
+                        }
+                    }
                 }
+
             });
         })
     }
@@ -313,28 +334,44 @@ class Main extends eui.UILayer {
     private touchEvent(e: egret.TouchEvent) {
         switch (e.type) {
             case egret.TouchEvent.TOUCH_BEGIN: {
+
+                if (!this.cueArea.getAABB().containsPoint([e.stageX, e.stageY])) {
+                    console.log("TOUCH_BEGIN: outside cueArea, contains point false");
+                    return;
+                }
+
+                console.log("TOUCH_BEGIN");
                 if (this.cueBallState == game.CueBallState.CUEBALLVISIBLE) {
-                    this.stage.addChild(this._cueBall = new game.CueBall(this.world, this.levelsArray[this.currentLevel].cueBalls));
+
                     this.cueState == game.CueState.CUEOFF;
                     this._cueBall.cueBallBody.sleepState = p2.Body.SLEEPY;
                     this.stage.addChild(this._cue = new game.Cue(600, 200, this.world));
+                    this._cue.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
+                    this._cue.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
                     this.createMaterial();
                 }
-                this._cue.cueGroup.x = e.stageX;
-                this._cue.cueGroup.y = e.stageY;
-                let i = e.stageX - this._cue.cueGroup.x;
-                let o = e.stageY - this._cue.cueGroup.y;
+                this._cue.cueBody.position = [e.stageX, e.stageY];
+                // this._cue.cueGroup.y = e.stageY;
                 this.mouseStart = new Array(this._cueBall.cueBallBody.position[0], this._cueBall.cueBallBody.position[1]);
                 break;
             }
             case egret.TouchEvent.TOUCH_END: {
-                if (this.cueBallState == game.CueBallState.CUEBALLVISIBLE) {
-                    return void (this.cueBallState = game.CueBallState.CUEBALLSTOP);
+
+                if (!this.cueArea.getAABB().containsPoint([e.stageX, e.stageY])) {
+                    console.log("TOUCH_END: outside cueArea, contains point false");
+                    return;
                 }
+
+                console.log("TOUCH_END");
+                if (this.cueBallState == game.CueBallState.CUEBALLVISIBLE) {
+                    this.cueBallState = game.CueBallState.CUEBALLSTOP;
+                }
+
                 egret.Tween.get(this._cue.cueBmp).to({
                     scaleX: 1.5,
                     scaleY: 1.5
                 }, 500).call(() => {
+                    this.world.removeBody(this._cue.cueBody);
                     this.stage.removeChild(this._cue);
                     this.cueState = game.CueState.CUEOFF;
                 });
@@ -343,14 +380,19 @@ class Main extends eui.UILayer {
                 p2.vec2.subtract(a, this._cueBall.cueBallBody.position, this.mouseEnd);
                 if (a.length > 1) {
                     p2.vec2.scale(a, a, 100 / Math.sqrt(a[0] * a[0] + a[1] * a[1]));
-                    this._cueBall.cueBallBody.applyImpulse(a, this.mouseEnd);
+                    if (this._cue.cueBody.aabb.containsPoint(this._cueBall.cueBallBody.position)) {
+                        this._cueBall.cueBallBody.applyImpulse(a, this.mouseEnd);
+                    }
+
                     this._ball.ballBody.forEach(ballBody => {
                         let aRedBall = new Array();
                         p2.vec2.subtract(aRedBall, ballBody.position, this.mouseEnd);
 
-                        if (aRedBall && aRedBall.length > 1) {
-                            p2.vec2.scale(aRedBall, aRedBall, 100 / Math.sqrt(aRedBall[0] * aRedBall[0] + aRedBall[1] * aRedBall[1]));
-                            ballBody.applyImpulse(aRedBall, this.mouseEnd);
+                        if (this._cue.cueBody.aabb.containsPoint(ballBody.position)) {
+                            if (aRedBall && aRedBall.length > 1) {
+                                p2.vec2.scale(aRedBall, aRedBall, 100 / Math.sqrt(aRedBall[0] * aRedBall[0] + aRedBall[1] * aRedBall[1]));
+                                ballBody.applyImpulse(aRedBall, this.mouseEnd);
+                            }
                         }
                     });
                     this.mouseStart = null;
@@ -360,8 +402,14 @@ class Main extends eui.UILayer {
                 break;
             }
             case egret.TouchEvent.TOUCH_MOVE: {
-                this._cue.cueGroup.x = e.stageX;
-                this._cue.cueGroup.y = e.stageY;
+                if (!this.cueArea.getAABB().containsPoint([e.stageX, e.stageY])) {
+                    console.log("TOUCH_MOVE: outside cueArea, contains point false");
+                    return;
+                }
+
+                console.log("TOUCH_MOVE");
+                this._cue.cueBody.position = [e.stageX, e.stageY];
+                // this._cue.cueGroup.y = e.stageY;
                 break;
             }
         }
@@ -385,14 +433,18 @@ class Main extends eui.UILayer {
             this.cueBallState = game.CueBallState.CUEBALLVISIBLE;
             this.cueState = game.CueState.CUEON;
         }
-        this.cueBallState == game.CueBallState.CUEBALLVISIBLE && (this.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchEvent, this),
-            this.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this),
-            this.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this)),
-            this.cueBallState == game.CueBallState.CUEBALLMOVE;
+
+        if (this.cueBallState == game.CueBallState.CUEBALLVISIBLE) {
+            this.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchEvent, this);
+            this.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
+            this.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
+        }
 
         if (this.cueState != game.CueState.CUEON) {
             if (this._cueBall.cueBallBody.sleepState == p2.Body.SLEEPING) {
                 this.stage.addChild(this._cue = new game.Cue(600, 200, this.world));
+                this._cue.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
+                this._cue.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
                 this.cueState = game.CueState.CUEON;
                 this.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchEvent, this);
                 this.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);

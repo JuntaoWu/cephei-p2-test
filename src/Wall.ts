@@ -12,6 +12,7 @@ module game {
         public rightWall: p2.Box;
 
         public airWall: p2.Box;
+        public airWallTypes = [];
 
         public constructor(private world: p2.World, private config: Array<GameObjectInfo>) {
             super();
@@ -77,29 +78,13 @@ module game {
                 this.rightWall = d,
                 this.wallBodys.push(p);
 
-
-            this.config.forEach(airWall => {
-                //airWall
-                var airBox = new p2.Box({
-                    width: airWall.width,
-                    height: airWall.height,
-                });
-                const airBody = new p2.Body({
-                    mass: 0,
-                    position: [airWall.x, airWall.y],
-                });
-
-                airBody.addShape(airBox),
-                    airBody.displays = [],
-                    this.world.addBody(airBody),
-                    this.airWall = airBox,
-                    this.airWallBodys.push(airBody);
-            });
+            this.updateConfig(this.config);
         }
 
         public updateConfig(config: Array<GameObjectInfo>) {
             this.config = config;
 
+            this.airWallTypes.length = 0;
             this.airWallBodys.forEach(body => {
                 body && this.world.removeBody(body);
             });
@@ -120,7 +105,22 @@ module game {
                     airBody.displays = [],
                     this.world.addBody(airBody),
                     this.airWall = airBox,
-                    this.airWallBodys.push(airBody);
+                    this.airWallBodys.push(airBody),
+                    this.airWallTypes.push(airWall.type);
+
+                if (airWall.endX && airWall.endY) {
+                    let doSth = () => {
+                        if (!airBody) {
+                            return;
+                        }
+                        egret.Tween.get(airBody).to({ position: [airWall.endX, airWall.endY] }, 1000, egret.Ease.backInOut).to({
+                            position: [airWall.x, airWall.y]
+                        }, 1000).call(() => {
+                            doSth();
+                        });
+                    }
+                    doSth();
+                }
             });
         }
 
