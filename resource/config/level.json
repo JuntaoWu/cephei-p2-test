@@ -5,7 +5,7 @@
             { "width": 50, "height": 50, "x": 400, "y": 150, "type": "enemy" }
         ],
         "walls": [
-            { "width": 20, "height": 100, "x": 300, "y": 225, "endX": 300, "endY": 325, "type": "attack" }
+            { "width": 20, "height": 100, "x": 300, "y": 275, "endX": 300, "endY": 325, "type": "attack" }
         ],
         "cueBalls": [
             { "width": 50, "height": 50, "x": 500, "y": 250 }

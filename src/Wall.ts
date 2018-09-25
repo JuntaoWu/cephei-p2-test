@@ -66,7 +66,7 @@ module game {
                 this.wallBodys.push(h);
             var d = new p2.Box({
                 width: 100,
-                height: 300
+                height: 300,
             });
             const p = new p2.Body({
                 mass: 0,
@@ -113,11 +113,25 @@ module game {
                         if (!airBody) {
                             return;
                         }
-                        egret.Tween.get(airBody).to({ position: [airWall.endX, airWall.endY] }, 1000, egret.Ease.backInOut).to({
-                            position: [airWall.x, airWall.y]
-                        }, 1000).call(() => {
-                            doSth();
+
+                        // var a = new Array();
+                        // p2.vec2.subtract(a, airBody.position, [airWall.endX, airWall.endY]);
+                        // airBody.applyImpulse(a, airBody.position);
+
+                        let originalPositionX = airBody.position[0];
+                        let originalPositionY = airBody.position[1];
+                        
+                        this.world.on("postStep", () => {
+                            // Kinematic bodies are controlled via velocity.
+                            airBody.position[0] = originalPositionX + (airWall.endX - airWall.x) * Math.sin(2 / 10 * this.world.time);
+                            airBody.position[1] = originalPositionY + (airWall.endY - airWall.y) * Math.sin(2 / 10 * this.world.time);
                         });
+
+                        // egret.Tween.get(airBody).to({ position: [airWall.endX, airWall.endY] }, 1000, egret.Ease.backInOut).to({
+                        //     position: [airWall.x, airWall.y]
+                        // }, 1000).call(() => {
+                        //     doSth();
+                        // });
                     }
                     doSth();
                 }
