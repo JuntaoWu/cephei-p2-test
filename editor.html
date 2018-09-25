@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Constraints demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="../build/p2.renderer.js"></script>
+    <link href="css/demo.css" rel="stylesheet" />
+    <meta name="description" content="Tests a few constraints.">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+
+<body>
+    <script>
+
+        var N = 10,  // Number of circles
+            r = 0.1; // circle radius
+
+        // Create demo application
+        var app = new p2.WebGLRenderer(function () {
+
+            var world = new p2.World({
+                gravity: [0, 0]
+            });
+
+            this.setWorld(world);
+
+            world.solver.iterations = N;
+
+            var e = new p2.Box({
+                width: 6.4,
+                height: 1
+            });
+            upOneWall = new p2.Body({
+                mass: 0,
+                position: [3.2, 0.5],
+            });
+            upOneWall.addShape(e);
+            world.addBody(upOneWall);
+
+            var a = new p2.Box({
+                width: 6.4,
+                height: 1
+            });
+            downOneWall = new p2.Body({
+                mass: 0,
+                position: [3.2, 11.36]
+            });
+            downOneWall.addShape(a);
+            world.addBody(downOneWall);
+
+            //leftWall
+            var n = new p2.Box({
+                width: 1,
+                height: 11.36
+            });
+            leftWall = new p2.Body({
+                mass: 0,
+                position: [0.5, 11.36 / 2]
+            });
+            leftWall.displays = [];
+            leftWall.addShape(n);
+            this.world.addBody(leftWall);
+
+            var d = new p2.Box({
+                width: 1,
+                height: 11.36
+            });
+            rightWall = new p2.Body({
+                mass: 0,
+                position: [5.9, 11.36 / 2]
+            });
+            rightWall.addShape(d);
+            this.world.addBody(rightWall);
+
+            this.frame(0, 0, 8, 8);
+        });
+
+    </script>
+</body>
+
+</html>
