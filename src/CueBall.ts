@@ -7,7 +7,7 @@ module game {
         public cueBallBody: p2.Body;
         private cueBallBmp: egret.Bitmap;
 
-        public constructor(private world: p2.World, private config: Array<GameObjectInfo>) {
+        public constructor(private world: p2.World, private config: Array<GameObjectInfo> = []) {
             super();
             this.createCueBall();
         }
@@ -23,7 +23,7 @@ module game {
             }
         }
 
-        public updateConfig(config: Array<GameObjectInfo>) {
+        public updateConfig(config: Array<GameObjectInfo> = []) {
             this.config = config;
 
             this.cueBallBody && this.world.removeBody(this.cueBallBody);
@@ -32,6 +32,12 @@ module game {
             this.cueBallRemoveBmp();
 
             this.config.forEach(gameObjectInfo => {
+
+                gameObjectInfo.width = parseFloat(gameObjectInfo.width as string) * 100;
+                gameObjectInfo.height = parseFloat(gameObjectInfo.height as string) * 100;
+                gameObjectInfo.x = parseFloat(gameObjectInfo.x as string) * 100;
+                gameObjectInfo.y = 1100 - parseFloat(gameObjectInfo.y as string) * 100 + 180;
+
                 var e = new p2.Circle({
                     radius: gameObjectInfo.width / 2
                 });
@@ -45,8 +51,7 @@ module game {
                 var i = new egret.Bitmap(RES.getRes("cueBall_png"));
                 i.width = gameObjectInfo.width,
                     i.height = gameObjectInfo.height,
-                    i.anchorOffsetX = i.anchorOffsetY = 25,
-                    i.rotation = -90,
+                    i.anchorOffsetX = i.anchorOffsetY = gameObjectInfo.width / 2,
                     this.addChild(i),
                     t.displays = [i],
                     this.cueBallBody = t,

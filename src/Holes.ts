@@ -4,7 +4,7 @@ module game {
 
         public holes = [];
 
-        public constructor(private world: p2.World, private config: Array<GameObjectInfo>) {
+        public constructor(private world: p2.World, private config: Array<GameObjectInfo> = []) {
             super();
             this.createHoles();
         }
@@ -80,7 +80,7 @@ module game {
             this.updateConfig(this.config);
         }
 
-        public updateConfig(config: Array<GameObjectInfo>) {
+        public updateConfig(config: Array<GameObjectInfo> = []) {
             this.config = config;
             this.holes.forEach(body => {
                 this.world.removeBody(body);
@@ -88,6 +88,12 @@ module game {
             this.holes.length = 0;
 
             this.config.forEach(hole => {
+
+                hole.width = parseFloat(hole.width as string) * 100;
+                hole.height = parseFloat(hole.height as string) * 100;
+                hole.x = parseFloat(hole.x as string) * 100;
+                hole.y = 1100 - parseFloat(hole.y as string) * 100 + 180;
+
                 var circle6 = new p2.Circle({
                     radius: hole.width / 2
                 });

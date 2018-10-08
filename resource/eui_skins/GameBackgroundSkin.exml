@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin width="720" height="1280" class="skins.GameBackgroundSkin" xmlns:e="http://ns.egret.com/eui">
+    <e:Image source="table_jpg"></e:Image>
+    <!--<e:Group id="groupPhysic" width="100%" height="1100" x="0" y="180">
+        
+    </e:Group>-->
+</e:Skin>

@@ -7,6 +7,10 @@ declare module skins{
 	}
 }
 declare module skins{
+	class GameBackgroundSkin extends eui.Skin{
+	}
+}
+declare module skins{
 	class HScrollBarSkin extends eui.Skin{
 	}
 }
@@ -17,6 +21,8 @@ declare module skins{
 declare module skins{
 	class ItemRendererSkin extends eui.Skin{
 	}
+}
+declare class NewFile extends eui.Skin{
 }
 declare module skins{
 	class PanelSkin extends eui.Skin{

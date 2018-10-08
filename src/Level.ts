@@ -9,12 +9,12 @@ module game {
     }
 
     export class GameObjectInfo {
-        public width: number;
-        public height: number;
-        public x: number;
-        public y: number;
+        public width: any;
+        public height: any;
+        public x: any;
+        public y: any;
         public type: string;
-        public endX: number;
-        public endY: number;
+        public endX?: any;
+        public endY?: any;
     }
 }

@@ -14,7 +14,7 @@ module game {
         public airWall: p2.Box;
         public airWallTypes = [];
 
-        public constructor(private world: p2.World, private config: Array<GameObjectInfo>) {
+        public constructor(private world: p2.World, private config: Array<GameObjectInfo> = []) {
             super();
             this.createWall();
         }
@@ -22,12 +22,12 @@ module game {
         public createWall() {
             //upOneWall
             var e = new p2.Box({
-                width: 800,
-                height: 85
+                width: 720,
+                height: 60
             });
             const t = new p2.Body({
                 mass: 0,
-                position: [400, 45]
+                position: [360, 30 + 180]
             });
             t.addShape(e),
                 t.displays = [],
@@ -37,12 +37,12 @@ module game {
 
             //downOneWall
             var a = new p2.Box({
-                width: 800,
-                height: 85
+                width: 720,
+                height: 60
             });
             const s = new p2.Body({
                 mass: 0,
-                position: [400, 435]
+                position: [360, 1100 + 150]
             });
             s.addShape(a),
                 s.displays = [],
@@ -52,12 +52,12 @@ module game {
 
             //leftWall
             var n = new p2.Box({
-                width: 100,
-                height: 300
+                width: 40,
+                height: 1100
             });
             const h = new p2.Body({
                 mass: 0,
-                position: [50, 240]
+                position: [20, 1100 / 2 + 180]
             });
             h.displays = [],
                 h.addShape(n),
@@ -65,12 +65,12 @@ module game {
                 this.leftWall = n,
                 this.wallBodys.push(h);
             var d = new p2.Box({
-                width: 100,
-                height: 300,
+                width: 40,
+                height: 1100,
             });
             const p = new p2.Body({
                 mass: 0,
-                position: [750, 240]
+                position: [700, 1100 / 2 + 180]
             });
             p.displays = [],
                 p.addShape(d),
@@ -81,7 +81,7 @@ module game {
             this.updateConfig(this.config);
         }
 
-        public updateConfig(config: Array<GameObjectInfo>) {
+        public updateConfig(config: Array<GameObjectInfo> = []) {
             this.config = config;
 
             this.airWallTypes.length = 0;
@@ -91,6 +91,11 @@ module game {
             this.airWallBodys.length = 0;
 
             this.config.forEach(airWall => {
+                airWall.width = parseFloat(airWall.width as string) * 100;
+                airWall.height = parseFloat(airWall.height as string) * 100;
+                airWall.x = parseFloat(airWall.x as string) * 100;
+                airWall.y = 1100 - parseFloat(airWall.y as string) * 100 + 180;
+
                 //airWall
                 var airBox = new p2.Box({
                     width: airWall.width,
@@ -120,7 +125,7 @@ module game {
 
                         let originalPositionX = airBody.position[0];
                         let originalPositionY = airBody.position[1];
-                        
+
                         this.world.on("postStep", () => {
                             // Kinematic bodies are controlled via velocity.
                             airBody.position[0] = originalPositionX + (airWall.endX - airWall.x) * Math.sin(2 / 10 * this.world.time);

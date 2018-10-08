@@ -12,7 +12,7 @@ module game {
 
         public hps = [];
 
-        public constructor(private world: p2.World, private config: Array<GameObjectInfo>) {
+        public constructor(private world: p2.World, private config: Array<GameObjectInfo> = []) {
             super();
             this.createBall();
         }
@@ -28,7 +28,7 @@ module game {
             }
         }
 
-        public updateConfig(config: Array<GameObjectInfo>) {
+        public updateConfig(config: Array<GameObjectInfo> = []) {
             this.config = config;
 
             this.types.length = 0;
@@ -43,6 +43,12 @@ module game {
             this.ballBmps.length = 0;
 
             this.config.forEach(ball => {
+
+                ball.width = parseFloat(ball.width as string) * 100;
+                ball.height = parseFloat(ball.height as string) * 100;
+                ball.x = parseFloat(ball.x as string) * 100;
+                ball.y = 1100 - parseFloat(ball.y as string) * 100 + 180;
+
                 var t = new p2.Circle({
                     radius: ball.width / 2
                 })
@@ -56,7 +62,6 @@ module game {
                 o.width = o.height = ball.width,
                     o.anchorOffsetX = ball.width / 2,
                     o.anchorOffsetY = ball.height / 2,
-                    o.rotation = -90,
                     this.addChild(o),
                     i.displays = [o],
                     this.ballBmps.push(o),
