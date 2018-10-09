@@ -21,13 +21,17 @@ module game {
 
         public createWall() {
             //upOneWall
-            var e = new p2.Box({
+            var upOneWallConfig = {
                 width: 720,
                 height: 60
+            };
+            var e = new p2.Box({
+                width: upOneWallConfig.width,
+                height: upOneWallConfig.height
             });
             const t = new p2.Body({
                 mass: 0,
-                position: [360, 30 + 180]
+                position: [upOneWallConfig.width / 2, 180 + upOneWallConfig.height / 2]
             });
             t.addShape(e),
                 t.displays = [],
@@ -37,12 +41,12 @@ module game {
 
             //downOneWall
             var a = new p2.Box({
-                width: 720,
-                height: 60
+                width: upOneWallConfig.width,
+                height: upOneWallConfig.height
             });
             const s = new p2.Body({
                 mass: 0,
-                position: [360, 1100 + 150]
+                position: [upOneWallConfig.width / 2, 1280 - upOneWallConfig.height / 2]
             });
             s.addShape(a),
                 s.displays = [],
@@ -51,13 +55,17 @@ module game {
                 this.wallBodys.push(s);
 
             //leftWall
-            var n = new p2.Box({
+            var leftWallConfig = {
                 width: 40,
                 height: 1100
+            };
+            var n = new p2.Box({
+                width: leftWallConfig.width,
+                height: leftWallConfig.height
             });
             const h = new p2.Body({
                 mass: 0,
-                position: [20, 1100 / 2 + 180]
+                position: [leftWallConfig.width / 2, 180 + leftWallConfig.height / 2]
             });
             h.displays = [],
                 h.addShape(n),
@@ -70,7 +78,7 @@ module game {
             });
             const p = new p2.Body({
                 mass: 0,
-                position: [700, 1100 / 2 + 180]
+                position: [720 - leftWallConfig.width / 2, 180 + leftWallConfig.height / 2]
             });
             p.displays = [],
                 p.addShape(d),
@@ -96,7 +104,7 @@ module game {
                     width: parseFloat(airWall.width as string) * 100,
                     height: parseFloat(airWall.height as string) * 100,
                     x: parseFloat(airWall.x as string) * 100,
-                    y: 1100 - parseFloat(airWall.y as string) * 100 + 180
+                    y: 1280 - parseFloat(airWall.y as string) * 100,
                 };
 
                 //airWall
@@ -108,7 +116,7 @@ module game {
                     mass: 0,
                     position: [clone.x, clone.y],
                 });
-
+                airBody.angle = airWall.angle;
                 airBody.addShape(airBox),
                     airBody.displays = [],
                     this.world.addBody(airBody),

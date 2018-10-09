@@ -247,7 +247,9 @@ class Main extends eui.UILayer {
         this._wall.downOneWall.material = t;
         this._wall.leftWall.material = t;
         this._wall.rightWall.material = t;
-        this._wall.airWall.material = x;
+        if(this._wall.airWall) {
+            this._wall.airWall.material = x;
+        }
         for (var l = 0; l < this._ball.ballShapes.length; l++) {
             var r = this._ball.ballShapes[l];
             r.material = i
@@ -352,7 +354,9 @@ class Main extends eui.UILayer {
                         this._cueBall.cueBallBody.sleepState = p2.Body.SLEEPY;
                     }
 
-                    this.stage.addChild(this._cue = new game.Cue(600, 200, this.world));
+                    if(!this._cue) {
+                        this.stage.addChild(this._cue = new game.Cue(600, 200, this.world));
+                    }
                     this._cue.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
                     this._cue.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
                     this.createMaterial();

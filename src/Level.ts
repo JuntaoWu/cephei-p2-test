@@ -16,5 +16,6 @@ module game {
         public type: string;
         public endX?: any;
         public endY?: any;
+        public angle?: any;
     }
 }
