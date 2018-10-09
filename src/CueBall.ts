@@ -33,25 +33,27 @@ module game {
 
             this.config.forEach(gameObjectInfo => {
 
-                gameObjectInfo.width = parseFloat(gameObjectInfo.width as string) * 100;
-                gameObjectInfo.height = parseFloat(gameObjectInfo.height as string) * 100;
-                gameObjectInfo.x = parseFloat(gameObjectInfo.x as string) * 100;
-                gameObjectInfo.y = 1100 - parseFloat(gameObjectInfo.y as string) * 100 + 180;
+                let clone = {
+                    width: parseFloat(gameObjectInfo.width as string) * 100,
+                    height: parseFloat(gameObjectInfo.height as string) * 100,
+                    x: parseFloat(gameObjectInfo.x as string) * 100,
+                    y: 1100 - parseFloat(gameObjectInfo.y as string) * 100 + 180
+                };
 
                 var e = new p2.Circle({
-                    radius: gameObjectInfo.width / 2
+                    radius: clone.width / 2
                 });
                 var t = new p2.Body({
                     mass: 1,
-                    position: [gameObjectInfo.x, gameObjectInfo.y]
+                    position: [clone.x, clone.y]
                 });
                 t.addShape(e),
                     this.world.addBody(t),
                     this.cueBallShape = e;
                 var i = new egret.Bitmap(RES.getRes("cueBall_png"));
-                i.width = gameObjectInfo.width,
-                    i.height = gameObjectInfo.height,
-                    i.anchorOffsetX = i.anchorOffsetY = gameObjectInfo.width / 2,
+                i.width = clone.width,
+                    i.height = clone.height,
+                    i.anchorOffsetX = i.anchorOffsetY = clone.width / 2,
                     this.addChild(i),
                     t.displays = [i],
                     this.cueBallBody = t,

@@ -91,19 +91,22 @@ module game {
             this.airWallBodys.length = 0;
 
             this.config.forEach(airWall => {
-                airWall.width = parseFloat(airWall.width as string) * 100;
-                airWall.height = parseFloat(airWall.height as string) * 100;
-                airWall.x = parseFloat(airWall.x as string) * 100;
-                airWall.y = 1100 - parseFloat(airWall.y as string) * 100 + 180;
+
+                let clone = {
+                    width: parseFloat(airWall.width as string) * 100,
+                    height: parseFloat(airWall.height as string) * 100,
+                    x: parseFloat(airWall.x as string) * 100,
+                    y: 1100 - parseFloat(airWall.y as string) * 100 + 180
+                };
 
                 //airWall
                 var airBox = new p2.Box({
-                    width: airWall.width,
-                    height: airWall.height,
+                    width: clone.width,
+                    height: clone.height,
                 });
                 const airBody = new p2.Body({
                     mass: 0,
-                    position: [airWall.x, airWall.y],
+                    position: [clone.x, clone.y],
                 });
 
                 airBody.addShape(airBox),
@@ -113,7 +116,7 @@ module game {
                     this.airWallBodys.push(airBody),
                     this.airWallTypes.push(airWall.type);
 
-                if (airWall.endX && airWall.endY) {
+                if (airWall.type == "moving" && airWall.endY) {
                     let doSth = () => {
                         if (!airBody) {
                             return;

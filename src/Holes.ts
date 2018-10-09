@@ -89,17 +89,19 @@ module game {
 
             this.config.forEach(hole => {
 
-                hole.width = parseFloat(hole.width as string) * 100;
-                hole.height = parseFloat(hole.height as string) * 100;
-                hole.x = parseFloat(hole.x as string) * 100;
-                hole.y = 1100 - parseFloat(hole.y as string) * 100 + 180;
+                let clone = {
+                    width: parseFloat(hole.width as string) * 100,
+                    height: parseFloat(hole.height as string) * 100,
+                    x: parseFloat(hole.x as string) * 100,
+                    y: 1100 - parseFloat(hole.y as string) * 100 + 180
+                };
 
                 var circle6 = new p2.Circle({
-                    radius: hole.width / 2
+                    radius: clone.width / 2
                 });
                 var body6 = new p2.Body({
                     mass: 0,
-                    position: [hole.x, hole.y]
+                    position: [clone.x, clone.y]
                 });
                 body6.addShape(circle6);
                 body6.displays = [];

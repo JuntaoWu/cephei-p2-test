@@ -43,25 +43,26 @@ module game {
             this.ballBmps.length = 0;
 
             this.config.forEach(ball => {
-
-                ball.width = parseFloat(ball.width as string) * 100;
-                ball.height = parseFloat(ball.height as string) * 100;
-                ball.x = parseFloat(ball.x as string) * 100;
-                ball.y = 1100 - parseFloat(ball.y as string) * 100 + 180;
+                let clone = {
+                    width: parseFloat(ball.width as string) * 100,
+                    height: parseFloat(ball.height as string) * 100,
+                    x: parseFloat(ball.x as string) * 100,
+                    y: 1100 - parseFloat(ball.y as string) * 100 + 180
+                };
 
                 var t = new p2.Circle({
-                    radius: ball.width / 2
+                    radius: clone.width / 2
                 })
                     , i = new p2.Body({
                         mass: 1,
-                        position: [ball.x, ball.y]
+                        position: [clone.x, clone.y]
                     });
                 i.addShape(t),
                     this.world.addBody(i);
                 var o = new egret.Bitmap(RES.getRes("redBall_png"));
-                o.width = o.height = ball.width,
-                    o.anchorOffsetX = ball.width / 2,
-                    o.anchorOffsetY = ball.height / 2,
+                o.width = o.height = clone.width,
+                    o.anchorOffsetX = clone.width / 2,
+                    o.anchorOffsetY = clone.height / 2,
                     this.addChild(o),
                     i.displays = [o],
                     this.ballBmps.push(o),

@@ -91,8 +91,8 @@ class Main extends eui.UILayer {
             await this.loadTheme();
             await RES.loadGroup("preload", 0);
             let token = localStorage.getItem("token");
-            let levelsArray = RES.getRes(`level_json`);
-            //let levelsArray = await RES.getResByUrl(`/level.json/?token=${token}`, null, this, RES.ResourceItem.TYPE_JSON);
+            //let levelsArray = RES.getRes(`level_json`);
+            let levelsArray = await RES.getResByUrl(`http://gdjzj.hzsdgames.com:8092/level.json/?token=${token}`, null, this, RES.ResourceItem.TYPE_JSON);
             this.levelsArray = levelsArray;
         }
         catch (e) {

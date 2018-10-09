@@ -17,29 +17,27 @@ module game {
             this.cueGroup = new eui.Group();
             this.cueGroup.x = x;
             this.cueGroup.y = y;
-            this.cueGroup.width = 50;
-            this.cueGroup.height = 50;
+            this.cueGroup.width = 110;
+            this.cueGroup.height = 110;
 
             this.radarBmp = new egret.Bitmap(RES.getRes("radar_png")),
-                this.radarBmp.anchorOffsetX = 100,
-                this.radarBmp.anchorOffsetY = 100,
-                this.radarBmp.width = 200,
-                this.radarBmp.height = 200,
-                this.radarBmp.rotation = -90;
-            this.cueGroup.addChild(this.radarBmp);
+                this.radarBmp.anchorOffsetX = 125,
+                this.radarBmp.anchorOffsetY = 125,
+                this.radarBmp.width = 250,
+                this.radarBmp.height = 250,
+                this.cueGroup.addChild(this.radarBmp);
 
             this.cueBmp = new egret.Bitmap(RES.getRes("cue_png")),
-                this.cueBmp.anchorOffsetX = 25,
-                this.cueBmp.anchorOffsetY = 25,
-                this.cueBmp.width = 50,
-                this.cueBmp.height = 50,
-                this.cueBmp.rotation = -90;
+                this.cueBmp.anchorOffsetX = 55,
+                this.cueBmp.anchorOffsetY = 55,
+                this.cueBmp.width = 110,
+                this.cueBmp.height = 110;
             this.cueGroup.addChild(this.cueBmp);
 
             this.addChild(this.cueGroup);
 
             var e = new p2.Circle({
-                radius: 100
+                radius: 125
             });
             var t = new p2.Body({
                 mass: 0,
