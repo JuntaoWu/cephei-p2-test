@@ -1,10 +1,8 @@
 
 module game {
     export class Level {
-        public level: number;
         public balls: Array<GameObjectInfo>;
         public walls: Array<GameObjectInfo>;
-        public cueBalls: Array<GameObjectInfo>;
         public holes: Array<GameObjectInfo>;
     }
 
@@ -13,9 +11,19 @@ module game {
         public height: any;
         public x: any;
         public y: any;
-        public type: string;
+        public bodyType: BodyType;
+        public angle?: any;
         public endX?: any;
         public endY?: any;
-        public angle?: any;
+    }
+
+    export enum BodyType {
+        TYPE_HOLE = 1,
+        TYPE_STATIC_WALL = 2,
+        TYPE_ATTACK_WALL = 3,
+        TYPE_MOVING_WALL = 4,
+        TYPE_ENEMY = 5,
+        TYPE_HERO = 6,
+        TYPE_MASS = 7,
     }
 }

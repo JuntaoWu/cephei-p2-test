@@ -4,15 +4,14 @@ module game {
     export class Wall extends egret.Sprite {
 
         public wallBodys = [];
-        public airWallBodys = [];
-        public upOneWall: p2.Box;
-        public downOneWall: p2.Box;
+
+        public upWall: p2.Box;
+        public downWall: p2.Box;
         public leftWall: p2.Box;
-        public downTwoWall: p2.Box;
         public rightWall: p2.Box;
 
-        public airWall: p2.Box;
-        public airWallTypes = [];
+        public airWallBodys = [];
+        public airWallTypes: BodyType[] = [];
 
         public constructor(private world: p2.World, private config: Array<GameObjectInfo> = []) {
             super();
@@ -20,7 +19,7 @@ module game {
         }
 
         public createWall() {
-            //upOneWall
+            //upWall
             var upOneWallConfig = {
                 width: 720,
                 height: 60
@@ -36,10 +35,10 @@ module game {
             t.addShape(e),
                 t.displays = [],
                 this.world.addBody(t),
-                this.upOneWall = e,
+                this.upWall = e,
                 this.wallBodys.push(t);
 
-            //downOneWall
+            //downWall
             var a = new p2.Box({
                 width: upOneWallConfig.width,
                 height: upOneWallConfig.height
@@ -51,7 +50,7 @@ module game {
             s.addShape(a),
                 s.displays = [],
                 this.world.addBody(s),
-                this.downOneWall = a,
+                this.downWall = a,
                 this.wallBodys.push(s);
 
             //leftWall
@@ -72,6 +71,8 @@ module game {
                 this.world.addBody(h),
                 this.leftWall = n,
                 this.wallBodys.push(h);
+
+            //rightWall
             var d = new p2.Box({
                 width: 40,
                 height: 1100,
@@ -116,20 +117,18 @@ module game {
                     mass: 0,
                     position: [clone.x, clone.y],
                 });
-                airBody.angle = airWall.angle;
-                airBody.addShape(airBox),
-                    airBody.displays = [],
-                    this.world.addBody(airBody),
-                    this.airWall = airBox,
-                    this.airWallBodys.push(airBody),
-                    this.airWallTypes.push(airWall.type);
+                airBody.angle = -airWall.angle;
+                airBody.addShape(airBox);
+                airBody.displays = [];
+                this.world.addBody(airBody);
+                this.airWallBodys.push(airBody);
+                this.airWallTypes.push(airWall.bodyType);
 
-                if (airWall.type == "moving" && airWall.endY) {
+                if (airWall.bodyType == BodyType.TYPE_MOVING_WALL) {
                     let doSth = () => {
                         if (!airBody) {
                             return;
                         }
-
                         // var a = new Array();
                         // p2.vec2.subtract(a, airBody.position, [airWall.endX, airWall.endY]);
                         // airBody.applyImpulse(a, airBody.position);
@@ -139,8 +138,8 @@ module game {
 
                         this.world.on("postStep", () => {
                             // Kinematic bodies are controlled via velocity.
-                            airBody.position[0] = originalPositionX + (airWall.endX - airWall.x) * Math.sin(2 / 10 * this.world.time);
-                            airBody.position[1] = originalPositionY + (airWall.endY - airWall.y) * Math.sin(2 / 10 * this.world.time);
+                            airBody.position[0] = originalPositionX + (-100) * Math.sin(2 / 10 * this.world.time);
+                            // airBody.position[1] = originalPositionY + (airWall.endY - airWall.y) * Math.sin(2 / 10 * this.world.time);
                         });
 
                         // egret.Tween.get(airBody).to({ position: [airWall.endX, airWall.endY] }, 1000, egret.Ease.backInOut).to({

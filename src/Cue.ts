@@ -36,17 +36,27 @@ module game {
 
             this.addChild(this.cueGroup);
 
+            var innerCircle = new p2.Circle({
+                radius: 55
+            });
+
+            innerCircle.collisionMask = 0;
+
             var e = new p2.Circle({
                 radius: 125
             });
+            e.collisionGroup = 0;
+            e.collisionMask = 0;
+
             var t = new p2.Body({
                 mass: 0,
                 position: [x, y]
             });
 
-            e.collisionGroup = 0;
-            e.collisionMask = 0;
             t.addShape(e);
+
+            t.addShape(innerCircle);
+
             t.fixedRotation = true;
             this.world.addBody(t);
 

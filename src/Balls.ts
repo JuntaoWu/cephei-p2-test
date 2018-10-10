@@ -5,12 +5,9 @@ module game {
         public ballShapes = [];
         public ballBody = [];
         public ballBmps = [];
-        public ballR = [];
-        public maxR = [];
 
-        public types = [];
-
-        public hps = [];
+        public types: BodyType[] = [];
+        public hps: number[] = [];
 
         public constructor(private world: p2.World, private config: Array<GameObjectInfo> = []) {
             super();
@@ -22,7 +19,7 @@ module game {
         }
 
         public removeBallBmp = function (e) {
-            if(this.ballBmps[e]) {
+            if (this.ballBmps[e]) {
                 this.removeChild(this.ballBmps[e]);
                 this.ballBmps[e] = undefined;
             }
@@ -32,6 +29,8 @@ module game {
             this.config = config;
 
             this.types.length = 0;
+            this.hps.length = 0;
+            
             this.ballBody.forEach(body => {
                 body && this.world.removeBody(body);
             });
@@ -59,7 +58,20 @@ module game {
                     });
                 i.addShape(t),
                     this.world.addBody(i);
-                var o = new egret.Bitmap(RES.getRes("redBall_png"));
+                var o;
+
+                switch (+ball.bodyType) {
+                    case BodyType.TYPE_ENEMY:
+                        o = new egret.Bitmap(RES.getRes("redBall_png"));
+                        break;
+                    case BodyType.TYPE_HERO:
+                        o = new egret.Bitmap(RES.getRes("cue_png"));
+                        break;
+                    case BodyType.TYPE_MASS:
+                        o = new egret.Bitmap(RES.getRes("cueBall_png"));
+                        break;
+                }
+
                 o.width = o.height = clone.width,
                     o.anchorOffsetX = clone.width / 2,
                     o.anchorOffsetY = clone.height / 2,
@@ -68,8 +80,8 @@ module game {
                     this.ballBmps.push(o),
                     this.ballShapes.push(t),
                     this.ballBody.push(i),
-                    this.types.push(ball.type || "enemy"),
-                    this.hps.push(ball.type == "hero" ? 2 : 3);
+                    this.types.push(ball.bodyType),
+                    this.hps.push(3);
             });
         }
 

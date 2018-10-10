@@ -92,7 +92,7 @@ class Main extends eui.UILayer {
             await RES.loadGroup("preload", 0);
             let token = localStorage.getItem("token");
             //let levelsArray = RES.getRes(`level_json`);
-            let levelsArray = await RES.getResByUrl(`http://gdjzj.hzsdgames.com:8092/level.json/?token=${token}`, null, this, RES.ResourceItem.TYPE_JSON);
+            let levelsArray = await RES.getResByUrl(`http://gdjzj.hzsdgames.com:8092/level.json/?token=${token}&timestamp=${new Date().getTime()}`, null, this, RES.ResourceItem.TYPE_JSON);
             this.levelsArray = levelsArray;
         }
         catch (e) {
@@ -116,12 +116,14 @@ class Main extends eui.UILayer {
     private levelsArray: Array<game.Level>;
 
     public async updateLevel(level: number) {
+        if (this._cue) {
+            this._cue.cueBody.shapes[1].collisionMask = 0;
+        }
         this.currentLevel = level;
         let levelsArray = this.levelsArray;
         this.currentLevel %= levelsArray.length;
         this._wall.updateConfig(levelsArray[this.currentLevel].walls);
         this._holes.updateConfig(levelsArray[this.currentLevel].holes);
-        this._cueBall.updateConfig(levelsArray[this.currentLevel].cueBalls);
         this._ball.updateConfig(levelsArray[this.currentLevel].balls);
     }
 
@@ -140,7 +142,6 @@ class Main extends eui.UILayer {
 
         this.stage.addChild(this._wall = new game.Wall(this.world, this.levelsArray[this.currentLevel].walls)),
             this.stage.addChild(this._holes = new game.Holes(this.world, this.levelsArray[this.currentLevel].holes)),
-            this.stage.addChild(this._cueBall = new game.CueBall(this.world, this.levelsArray[this.currentLevel].cueBalls)),
             this.stage.addChild(this._ball = new game.Balls(this.world, this.levelsArray[this.currentLevel].balls)),
             this.createMaterial(),
             this.hitListener(),
@@ -229,78 +230,54 @@ class Main extends eui.UILayer {
     }
 
     private createMaterial() {
-        var e = new p2.Material(0)
-            , t = new p2.Material(0)
-            , i = new p2.Material(0)
-            , o = new p2.ContactMaterial(e, t)
-            , a = new p2.ContactMaterial(e, i)
-            , s = new p2.ContactMaterial(t, i),
-            x = new p2.ContactMaterial(t, i);
-        x.restitution = 3;
-        o.restitution = 1;
-        a.restitution = .8;
-        s.restitution = .8;
-        if (this._cueBall && this._cueBall.cueBallShape) {
-            this._cueBall.cueBallShape.material = e;
+        var wallMaterial = new p2.Material(0)
+            , ballMaterial = new p2.Material(0)
+            , wallBallContactMaterial = new p2.ContactMaterial(wallMaterial, ballMaterial);
+
+        wallBallContactMaterial.restitution = 1;
+
+        this._wall.upWall.material = wallMaterial;
+        this._wall.downWall.material = wallMaterial;
+        this._wall.leftWall.material = wallMaterial;
+        this._wall.rightWall.material = wallMaterial;
+
+        for (var wallIndex = 0; wallIndex < this._wall.airWallBodys.length; wallIndex++) {
+            let wall: p2.Body = this._wall.airWallBodys[wallIndex];
+            wall.shapes[0].material = wallMaterial;
         }
-        this._wall.upOneWall.material = t;
-        this._wall.downOneWall.material = t;
-        this._wall.leftWall.material = t;
-        this._wall.rightWall.material = t;
-        if(this._wall.airWall) {
-            this._wall.airWall.material = x;
+
+        for (var ballIndex = 0; ballIndex < this._ball.ballShapes.length; ballIndex++) {
+            var ball = this._ball.ballShapes[ballIndex];
+            ball.material = ballMaterial;
         }
-        for (var l = 0; l < this._ball.ballShapes.length; l++) {
-            var r = this._ball.ballShapes[l];
-            r.material = i
-        }
-        this.world.addContactMaterial(o),
-            this.world.addContactMaterial(a),
-            this.world.addContactMaterial(s),
-            this.world.addContactMaterial(x);
+        this.world.addContactMaterial(wallBallContactMaterial);
     }
 
     private hitListener() {
-        var e = this;
         this.world.on("endContact", (t) => {
-            for (var i = 0; i < e._holes.holes.length; i++) {
-                var o = e._holes.holes[i];
-                if (t.bodyA === o || t.bodyB === o) {
-                    if (t.bodyA === e._cueBall.cueBallBody || t.bodyB === e._cueBall.cueBallBody) {
-                        e._cueBall.cueBallBody && e.world.removeBody(e._cueBall.cueBallBody);
-                        e._cueBall.cueBallRemoveBmp(),
-                            e.cueBallState = game.CueBallState.CUEBALLVISIBLE;
-                        e.cueState = game.CueState.CUEON;
 
-                        this.updateLevel(this.currentLevel);
-                    }
-                    else {
-                        for (var i = 0; i < e._ball.ballBody.length; i++) {
-                            var a = e._ball.ballBody[i];
-                            e._ball.ballBmps[i];
-                            e.world.removeBody(a);
-                            e._ball.removeBallBmp(i);
+            this._holes.holes.forEach(hole => {
+                if (t.bodyA === hole || t.bodyB === hole) {
+                    this._ball.ballBody.forEach((ballBody, i) => {
+                        if (t.bodyA === ballBody || t.bodyB === ballBody) {
+                            this.world.removeBody(ballBody);
+                            this._ball.removeBallBmp(i);
+
+                            if (this._ball.types[i] == game.BodyType.TYPE_HERO) {
+                                console.log("hero falls in a hole.");
+                                this.updateLevel(this.currentLevel);
+                            }
+                            else if (this._ball.types[i] == game.BodyType.TYPE_ENEMY) {
+                                console.log("enemy falls in a hole.");
+                                this.updateLevel(this.currentLevel + 1);
+                            }
                         }
-
-                        e._cueBall.cueBallBody && e.world.removeBody(e._cueBall.cueBallBody);
-                        e._cueBall.cueBallRemoveBmp(),
-                            e.cueBallState = game.CueBallState.CUEBALLVISIBLE;
-                        e.cueState = game.CueState.CUEON;
-
-                        this.updateLevel(this.currentLevel + 1);
-                    }
+                    });
                 }
-            }
+            });
 
-            if (this._ball.ballBody.some(i => i === t.bodyA) && this._ball.ballBody.some(i => i === t.bodyB)) {
-
-            }
-
-            for (var i = 0; i < e._ball.ballBody.length; i++) {
-                var a = e._ball.ballBody[i];
-            }
             this._wall.airWallBodys.forEach((i, wallIndex) => {
-                if (this._wall.airWallTypes[wallIndex] == "attack") {
+                if (this._wall.airWallTypes[wallIndex] == game.BodyType.TYPE_ATTACK_WALL) {
                     if (t.bodyA === i || t.bodyB === i) {
 
                         this._ball.ballBody.forEach((m, index) => {
@@ -310,11 +287,11 @@ class Main extends eui.UILayer {
                             }
                         });
 
-                        if (this._ball.hps.some((hp, index) => (hp <= 0 && this._ball.types[index] == "hero"))) {
+                        if (this._ball.hps.some((hp, index) => (hp <= 0 && this._ball.types[index] == game.BodyType.TYPE_HERO))) {
                             console.log("hero dead.");
                             this.updateLevel(this.currentLevel);
                         }
-                        else if (this._ball.hps.some((hp, index) => (hp <= 0 && this._ball.types[index] == "enemy"))) {
+                        else if (this._ball.hps.some((hp, index) => (hp <= 0 && this._ball.types[index] == game.BodyType.TYPE_ENEMY))) {
                             console.log("enemy dead.");
                             this.updateLevel(this.currentLevel + 1);
                         }
@@ -322,7 +299,7 @@ class Main extends eui.UILayer {
                 }
 
             });
-        })
+        });
     }
 
     private createDebug(): void {
@@ -340,6 +317,7 @@ class Main extends eui.UILayer {
     private touchEvent(e: egret.TouchEvent) {
         switch (e.type) {
             case egret.TouchEvent.TOUCH_BEGIN: {
+                this._cue.cueBody.shapes[1].collisionMask = 0;
 
                 if (!this.cueArea.getAABB().containsPoint([e.stageX, e.stageY])) {
                     console.log("TOUCH_BEGIN: outside cueArea, contains point false");
@@ -347,20 +325,22 @@ class Main extends eui.UILayer {
                 }
 
                 console.log("TOUCH_BEGIN");
-                if (this.cueBallState == game.CueBallState.CUEBALLVISIBLE) {
+                //                if (this.cueBallState == game.CueBallState.CUEBALLVISIBLE) {
 
-                    this.cueState == game.CueState.CUEOFF;
-                    if (this._cueBall.cueBallBody) {
-                        this._cueBall.cueBallBody.sleepState = p2.Body.SLEEPY;
-                    }
+                // if (this._cueBall.cueBallBody) {
+                //     this._cueBall.cueBallBody.sleepState = p2.Body.SLEEPY;
+                // }
 
-                    if(!this._cue) {
-                        this.stage.addChild(this._cue = new game.Cue(600, 200, this.world));
-                    }
-                    this._cue.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
-                    this._cue.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
-                    this.createMaterial();
-                }
+                // if (!this._cue) {
+                //this.stage.addChild(this._cue = new game.Cue(600, 200, this.world));
+                // }
+
+                this._cue.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchEvent, this);
+                this._cue.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
+                this._cue.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
+                this.createMaterial();
+                //                }
+
                 this._cue.cueBody.position = [e.stageX, e.stageY];
                 // this._cue.cueGroup.y = e.stageY;
                 this.mouseStart = new Array(e.stageX, e.stageY);
@@ -383,21 +363,14 @@ class Main extends eui.UILayer {
                     scaleX: 1.5,
                     scaleY: 1.5
                 }, 500).call(() => {
-                    this.world.removeBody(this._cue.cueBody);
-                    this.stage.removeChild(this._cue);
+                    //this.world.removeBody(this._cue.cueBody);
+                    //this.stage.removeChild(this._cue);
+                    this._cue.cueBody.shapes[1].collisionMask = -1;
+                    this._cue.cueBmp.scaleX = 1;
+                    this._cue.cueBmp.scaleY = 1;
                     this.cueState = game.CueState.CUEOFF;
                 });
                 this.mouseEnd = new Array(e.stageX, e.stageY);
-                var a = new Array();
-                if (this._cueBall.cueBallBody) {
-                    p2.vec2.subtract(a, this._cueBall.cueBallBody.position, this.mouseEnd);
-                }
-                if (a.length > 1) {
-                    p2.vec2.scale(a, a, 100 / Math.sqrt(a[0] * a[0] + a[1] * a[1]));
-                    if (this._cueBall.cueBallBody && this._cue.cueBody.aabb.containsPoint(this._cueBall.cueBallBody.position)) {
-                        this._cueBall.cueBallBody.applyImpulse(a, this.mouseEnd);
-                    }
-                }
 
                 this._ball.ballBody.forEach(ballBody => {
                     let aRedBall = new Array();
@@ -405,7 +378,7 @@ class Main extends eui.UILayer {
 
                     if (this._cue.cueBody.aabb.containsPoint(ballBody.position)) {
                         if (aRedBall && aRedBall.length > 1) {
-                            p2.vec2.scale(aRedBall, aRedBall, 100 / Math.sqrt(aRedBall[0] * aRedBall[0] + aRedBall[1] * aRedBall[1]));
+                            p2.vec2.scale(aRedBall, aRedBall, 200 / Math.sqrt(aRedBall[0] * aRedBall[0] + aRedBall[1] * aRedBall[1]));
                             ballBody.applyImpulse(aRedBall, this.mouseEnd);
                         }
                     }
@@ -442,11 +415,6 @@ class Main extends eui.UILayer {
                 o.y = i.position[1])
         }
 
-        if (this._cueBall.cueBallBody) {
-            (this._cueBall.cueBallBody.position[0] < 0 || this._cueBall.cueBallBody.position[0] > 800) && (this.cueBallState = game.CueBallState.CUEBALLOUT);
-            (this._cueBall.cueBallBody.position[1] < 0 || this._cueBall.cueBallBody.position[1] > 640) && (this.cueBallState = game.CueBallState.CUEBALLOUT);
-        }
-
         if (this.cueBallState == game.CueBallState.CUEBALLOUT) {
             this._cueBall.cueBallBody && this.world.removeBody(this._cueBall.cueBallBody);
             this.cueBallState = game.CueBallState.CUEBALLVISIBLE;
@@ -460,20 +428,16 @@ class Main extends eui.UILayer {
         }
 
         if (this.cueState != game.CueState.CUEON) {
-            if (!this._cueBall.cueBallBody || this._cueBall.cueBallBody.sleepState == p2.Body.SLEEPING) {
-                this.stage.addChild(this._cue = new game.Cue(200, 600, this.world));
+            if (!this._cue) {
+                this._cue = new game.Cue(200, 600, this.world);
                 this._cue.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
                 this._cue.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
-                this.cueState = game.CueState.CUEON;
-                this.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchEvent, this);
-                this.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
-                this.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
+                // this.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchEvent, this);
+                // this.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
+                // this.addEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
             }
-            else {
-                // this.removeEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchEvent, this);
-                // this.removeEventListener(egret.TouchEvent.TOUCH_END, this.touchEvent, this);
-                // this.removeEventListener(egret.TouchEvent.TOUCH_MOVE, this.touchEvent, this);
-            }
+            this.stage.addChild(this._cue);
+            this.cueState = game.CueState.CUEON;
         }
     }
     private types: string[] = ["box", "circle", "capsule", "line", "particle"]
